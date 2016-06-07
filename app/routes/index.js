@@ -1,57 +1,33 @@
 'use strict';
-
 var path = process.cwd();
-var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
 
 module.exports = function (app, passport) {
-
-	function isLoggedIn (req, res, next) {
-		if (req.isAuthenticated()) {
-			return next();
-		} else {
-			res.redirect('/login');
-		}
-	}
-
-	var clickHandler = new ClickHandler();
-
+	
 	app.route('/')
-		.get(isLoggedIn, function (req, res) {
+		.get(function (req, res) {
 			res.sendFile(path + '/public/index.html');
 		});
-
-	app.route('/login')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/login.html');
-		});
-
-	app.route('/logout')
-		.get(function (req, res) {
-			req.logout();
-			res.redirect('/login');
-		});
-
-	app.route('/profile')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
-		});
-
-	app.route('/api/:id')
-		.get(isLoggedIn, function (req, res) {
-			res.json(req.user.github);
-		});
-
-	app.route('/auth/github')
-		.get(passport.authenticate('github'));
-
-	app.route('/auth/github/callback')
-		.get(passport.authenticate('github', {
-			successRedirect: '/',
-			failureRedirect: '/login'
-		}));
-
-	app.route('/api/:id/clicks')
-		.get(isLoggedIn, clickHandler.getClicks)
-		.post(isLoggedIn, clickHandler.addClick)
-		.delete(isLoggedIn, clickHandler.resetClicks);
+	
+	app.get(/\/.+/, function(req, res){
+		var result = {}
+		if (req.originalUrl !== "/favicon.ico"){
+			var part = req.originalUrl.replace(/\//g, "").replace(/%20/g, " ");
+			if (!isNaN(parseInt(part))){
+				var date = new Date(parseInt(part))
+				result.unix = parseInt(part);
+				var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+				result.natural = monthNames[date.getMonth()] + " " + date.getDate() +", "+ date.getFullYear(); 
+			} else {
+				var date = new Date(part)
+				if (date.toString() === "Invalid Date") {
+					result.unix = null;
+					result.natural = null;
+				} else {
+					result.unix = Date.parse(part);
+					result.natural = part;	
+				}
+			}
+		}
+		res.json({ unix: result.unix ,  natural: result.natural});
+	})
 };
