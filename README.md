@@ -16,7 +16,7 @@ Example output:
 { "unix": 1450137600, "natural": "December 15, 2015" }
 ```
 
-All original information about Clementine.js FCC Boilerplate can be see here
+####All original information about Clementine.js FCC Boilerplate can be see here
 
 ```
 https://github.com/johnstonbl01/clementinejs-fcc
