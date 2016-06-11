@@ -1,5 +1,3 @@
-Open https://timestampmicro-ani007.c9users.io/ 
-
 There is a description of this task. According to this application should convert url into Unix and natural timestamp e.g.
 
 Example usage:
